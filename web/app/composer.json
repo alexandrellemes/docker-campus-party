@@ -1,0 +1,20 @@
+{
+    "require": {
+        "phpunit/phpunit": "*",
+        "slim/slim" : "*"
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Acme\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AppTest\\Acme\\": "test/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

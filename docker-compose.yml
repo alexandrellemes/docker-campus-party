@@ -1,0 +1,155 @@
+version: '3'
+services:
+
+    web:
+        container_name: web
+        image: nginx:latest
+        volumes:
+            - ./etc/nginx/default.conf:/etc/nginx/conf.d/default.conf
+            - ./etc/ssl:/etc/ssl
+            - ./web:/var/www/html
+            - ./etc/nginx/default.template.conf:/etc/nginx/conf.d/default.template
+        ports:
+            - 8000:80
+            - 3000:443
+        environment:
+            - NGINX_HOST=${NGINX_HOST}
+        command: /bin/sh -c "envsubst '$$NGINX_HOST' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+        restart: always
+        depends_on:
+            - php
+            - mysqldb
+        networks:
+            - code-network
+
+    php:
+        container_name: php
+        image: php:fpm
+        build:
+          context: ./php-fpm
+        restart: always
+        volumes:
+            - ./etc/php/php.ini:/usr/local/etc/php/conf.d/php.ini
+            - ./etc/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+            - ./etc/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+# A pasta Web está dentro do docker.. por ilustração. Pode-se apontar para outro lugar.
+            - ./web:/var/www/html
+        networks:
+            - code-network
+
+    composer:
+        container_name: composer
+#        image: composer/composer:php7
+        image: prooph/composer:7.2
+        volumes:
+            - ./web/app:/app
+        command: install
+
+    myadmin:
+        container_name: phpmyadmin
+        image: phpmyadmin/phpmyadmin:latest
+        ports:
+            - 8080:80
+        environment:
+            #- PMA_ARBITRARY=1
+            - PMA_HOST=${MYSQL_HOST}
+            - MYSQL_USERNAME=${MYSQL_USER}
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        restart: always
+        depends_on:
+            - mysqldb
+        networks:
+            - code-network
+
+    mysqldb:
+        container_name: mysqldb
+        image: mysql:5.7
+        restart: always
+        environment:
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        ports:
+            - 3306:3306
+        volumes:
+            - mysqldb_data:/var/lib/mysql
+            - ./mysql/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+        networks:
+            - code-network
+
+    memcached:
+        container_name: memcached
+        restart: always
+        image: memcached
+        ports:
+            - 11211:11211
+        networks:
+            - code-network
+
+    #  Gerenciador de Container.
+    portainer:
+        container_name: portainer
+        image: portainer/portainer
+        ports:
+            - 8081:9000
+        command: -H unix:///var/run/docker.sock
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - portainer_data:/data
+        networks:
+            - code-network
+
+    joomla:
+        container_name: joomla
+        image: joomla:latest
+        restart: always
+        ports:
+            - 7000:80
+        environment:
+            JOOMLA_DB_HOST: ${MYSQL_HOST}
+            JOOMLA_DB_USER: ${MYSQL_USER}
+            JOOMLA_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        volumes:
+            - /tmp:/tmp
+            - ./joomla/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+        depends_on:
+            - mysqldb
+        networks:
+            - code-network
+
+    wordpress:
+        container_name: wordpress
+        image: wordpress:latest
+        restart: always
+        ports:
+            - 7001:80
+        volumes:
+            - /tmp:/tmp
+            - wordpress_data:/docker-entrypoint-initdb.d
+            - ./wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+#            - ./wordpress/info.php:/var/www/html/info.php
+        #      - ./my-wordpress-theme:/var/www/html/wp-content/themes/my-wordpress-theme
+        environment:
+            WORDPRESS_DB_HOST: ${MYSQL_HOST}
+            WORDPRESS_DB_USER: ${MYSQL_USER}
+            WORDPRESS_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        depends_on:
+            - mysqldb
+        networks:
+            - code-network
+
+volumes:
+    web_data:
+    php_data:
+    composer_data:
+    myadmin_data:
+    mysqldb_data:
+    memcached_data:
+    portainer_data:
+    joomla_data:
+    wordpress_data:
+
+networks:
+    code-network:
+        driver: bridge
