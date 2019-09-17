@@ -13,7 +13,7 @@ To unmount the volumes and delete the containers, use this command: `docker-comp
 There are two scripts for volume management: `volume-backup.sh` and` volume-restore.sh`.
 
 Port config containers:
-|------------|-------|
+
 | Server     | Port  |
 |------------|-------|
 | MySQL      | 3306  |

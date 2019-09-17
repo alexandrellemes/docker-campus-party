@@ -14,7 +14,7 @@ Há dois scripts para o gerenciamento de volumes: `volume-backup.sh` e `volume-r
 
 Configuração das portas dos containers:
 
-|------------|-------|
+
 | Server     | Port  |
 |------------|-------|
 | MySQL      | 3306  |
