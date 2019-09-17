@@ -24,7 +24,7 @@ Port config containers:
 | Portainer  | 8081  |
 | Joomla     | 8001  |
 | WordPress  | 8002  |
-|------------|-------|
+
 
 The network configuration of the containers is in bridge mode.
 Hence they can be accessed by network.

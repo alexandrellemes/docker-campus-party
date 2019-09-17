@@ -25,7 +25,7 @@ Configuração das portas dos containers:
 | Portainer  | 8081  |
 | Joomla     | 8001  |
 | WordPress  | 8002  |
-|------------|-------|
+
 
 
 A configuração de rede dos containers estão em modo bridge.
