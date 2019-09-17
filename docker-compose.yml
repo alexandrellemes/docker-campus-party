@@ -32,8 +32,9 @@ services:
             - ./php-fpm/php.ini:/usr/local/etc/php/conf.d/php.ini
             - ./php-fpm/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
             - ./php-fpm/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
-# A pasta Web está dentro do docker.. por ilustração. Pode-se apontar para outro lugar.
             - ./web:/var/www/html
+        # A pasta Web está dentro do docker.. por ilustração. Pode-se apontar para outro lugar, por exemplo.
+#            - $HOME/discodocker/projetos:/var/www/html
         networks:
             - code-network
 
@@ -105,7 +106,7 @@ services:
         image: joomla:latest
         restart: always
         ports:
-            - 7000:80
+            - 8001:80
         environment:
             JOOMLA_DB_HOST: ${MYSQL_HOST}
             JOOMLA_DB_USER: ${MYSQL_USER}
@@ -123,7 +124,7 @@ services:
         image: wordpress:latest
         restart: always
         ports:
-            - 7001:80
+            - 8002:80
         volumes:
             - /tmp:/tmp
             - wordpress_data:/docker-entrypoint-initdb.d

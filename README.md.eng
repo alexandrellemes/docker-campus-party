@@ -1,0 +1,27 @@
+# Installation
+
+Use the scripts: `install-docker-linuxmint.sh` and `install-docker-compose.sh`, for Linux Mint.
+
+or
+
+Download the docker installation scripts: `https: // github.com / docker / docker-install`.
+
+After installation, use the `./Run.sh` script to create the docker environment.
+
+To unmount the volumes and delete the containers, use this command: `docker-compose down --volumes`.
+
+There are two scripts for volume management: `volume-backup.sh` and` volume-restore.sh`.
+
+##Port config containers:
+####8000 - Web
+####8080 - PhpMyAdmin
+####3306 - MySQL
+####11211 - MemCached
+####8081 - Portainer
+####8001 - Joomla
+####8002 - WordPress
+
+The network configuration of the containers is in bridge mode.
+Hence they can be accessed by network.
+
+Have fun!!!
