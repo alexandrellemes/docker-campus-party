@@ -12,14 +12,19 @@ To unmount the volumes and delete the containers, use this command: `docker-comp
 
 There are two scripts for volume management: `volume-backup.sh` and` volume-restore.sh`.
 
-##Port config containers:
-####8000 - Web
-####8080 - PhpMyAdmin
-####3306 - MySQL
-####11211 - MemCached
-####8081 - Portainer
-####8001 - Joomla
-####8002 - WordPress
+Port config containers:
+|------------|-------|
+| Server     | Port  |
+|------------|-------|
+| MySQL      | 3306  |
+| PHPMyAdmin | 8080  |
+| Nginx      | 8000  |
+| Nginx SSL  | 3000  |
+| Memcached  | 11211 |
+| Portainer  | 8081  |
+| Joomla     | 8001  |
+| WordPress  | 8002  |
+|------------|-------|
 
 The network configuration of the containers is in bridge mode.
 Hence they can be accessed by network.

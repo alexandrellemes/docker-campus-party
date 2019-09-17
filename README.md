@@ -12,14 +12,21 @@ Para desmontar os volumes e apagar os containers, utilize o comando: `docker-com
 
 Há dois scripts para o gerenciamento de volumes: `volume-backup.sh` e `volume-restore.sh`.
 
-##Portas:
-####8000 - Web
-####8080 - PhpMyAdmin
-####3306 - MySQL
-####11211 - MemCached
-####8081 - Portainer
-####8001 - Joomla
-####8002 - WordPress
+Configuração das portas dos containers:
+
+|------------|-------|
+| Server     | Port  |
+|------------|-------|
+| MySQL      | 3306  |
+| PHPMyAdmin | 8080  |
+| Nginx      | 8000  |
+| Nginx SSL  | 3000  |
+| Memcached  | 11211 |
+| Portainer  | 8081  |
+| Joomla     | 8001  |
+| WordPress  | 8002  |
+|------------|-------|
+
 
 A configuração de rede dos containers estão em modo bridge.
 Daí poderão ser acessados via rede.
