@@ -6,19 +6,22 @@ services:
         image: nginx:latest
         volumes:
             - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+            - ./nginx/laravue.conf:/etc/nginx/conf.d/laravue.conf
             - ./nginx/default.template.conf:/etc/nginx/conf.d/default.template
             - ./nginx/ssl:/etc/ssl
-            - ./web:/var/www/html
+#        # A pasta Web está dentro do docker.. por ilustração. Pode-se apontar para outro lugar, por exemplo.
+            - $HOME/discoDocker/apache/projetos:/var/www/html
+#            - ./web:/var/www/html
         ports:
-            - 8000:80
-            - 3000:443
+            - 80:80
+            - 443:443
         environment:
             - NGINX_HOST=${NGINX_HOST}
         command: /bin/sh -c "envsubst '$$NGINX_HOST' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
         restart: always
         depends_on:
             - php
-            - mysqldb
+            - mysql
         networks:
             - code-network
 
@@ -32,9 +35,9 @@ services:
             - ./php-fpm/php.ini:/usr/local/etc/php/conf.d/php.ini
             - ./php-fpm/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
             - ./php-fpm/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
-            - ./web:/var/www/html
-        # A pasta Web está dentro do docker.. por ilustração. Pode-se apontar para outro lugar, por exemplo.
-#            - $HOME/discodocker/projetos:/var/www/html
+#        # A pasta Web está dentro do docker.. por ilustração. Pode-se apontar para outro lugar, por exemplo.
+            - $HOME/discoDocker/apache/projetos:/var/www/html
+        #            - ./web:/var/www/html
         networks:
             - code-network
 
@@ -47,7 +50,7 @@ services:
         command: install
 
     myadmin:
-        container_name: phpmyadmin
+        container_name: myadmin
         image: phpmyadmin/phpmyadmin:latest
         ports:
             - 8080:80
@@ -58,15 +61,15 @@ services:
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
         restart: always
         depends_on:
-            - mysqldb
+            - mysql
         networks:
             - code-network
 
-    mysqldb:
-        container_name: mysqldb
+    mysql:
+        container_name: mysql
         image: mysql:latest
         restart: always
-        command: --default-authentication-plugin=mysql_native_password
+        command: ['mysqld', '--lower_case_table_names=0', '--default_authentication_plugin=mysql_native_password']
         environment:
             - MYSQL_DATABASE=${MYSQL_DATABASE}
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
@@ -80,10 +83,10 @@ services:
         networks:
             - code-network
 
-    memcached:
-        container_name: memcached
+    memcache:
+        container_name: memcache
         restart: always
-        image: memcached
+        image: memcached:latest
         ports:
             - 11211:11211
         networks:
@@ -102,44 +105,44 @@ services:
         networks:
             - code-network
 
-    joomla:
-        container_name: joomla
-        image: joomla:latest
-        restart: always
-        ports:
-            - 8001:80
-        environment:
-            JOOMLA_DB_HOST: ${MYSQL_HOST}
-            JOOMLA_DB_USER: ${MYSQL_USER}
-            JOOMLA_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-        volumes:
-            - /tmp:/tmp
-            - ./joomla/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
-        depends_on:
-            - mysqldb
-        networks:
-            - code-network
+#    joomla:
+#        container_name: joomla
+#        image: joomla:latest
+#        restart: always
+#        ports:
+#            - 8001:80
+#        environment:
+#            JOOMLA_DB_HOST: ${MYSQL_HOST}
+#            JOOMLA_DB_USER: ${MYSQL_USER}
+#            JOOMLA_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+#        volumes:
+#            - /tmp:/tmp
+#            - ./joomla/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+#        depends_on:
+#            - mysql
+#        networks:
+#            - code-network
 
-    wordpress:
-        container_name: wordpress
-        image: wordpress:latest
-        restart: always
-        ports:
-            - 8002:80
-        volumes:
-            - /tmp:/tmp
-            - wordpress_data:/docker-entrypoint-initdb.d
-            - ./wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+#    wordpress:
+#        container_name: wordpress
+#        image: wordpress:latest
+#        restart: always
+#        ports:
+#            - 8002:80
+#        volumes:
+#            - /tmp:/tmp
+#            - wordpress_data:/docker-entrypoint-initdb.d
+#            - ./wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
 #            - ./wordpress/info.php:/var/www/html/info.php
-        #      - ./my-wordpress-theme:/var/www/html/wp-content/themes/my-wordpress-theme
-        environment:
-            WORDPRESS_DB_HOST: ${MYSQL_HOST}
-            WORDPRESS_DB_USER: ${MYSQL_USER}
-            WORDPRESS_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-        depends_on:
-            - mysqldb
-        networks:
-            - code-network
+#              - ./my-wordpress-theme:/var/www/html/wp-content/themes/my-wordpress-theme
+#        environment:
+#            WORDPRESS_DB_HOST: ${MYSQL_HOST}
+#            WORDPRESS_DB_USER: ${MYSQL_USER}
+#            WORDPRESS_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+#        depends_on:
+#            - mysql
+#        networks:
+#            - code-network
 
 volumes:
     web_data:
